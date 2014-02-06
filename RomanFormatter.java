@@ -91,45 +91,6 @@ public class RomanFormatter {
 
 	}
 
-	// 4656 - "MMMMDCLVI"
-	// CM
-	// public String toRomanNumerals(int number)
-	// public int fromRomanNumber(String romanNumber)
-	//
-	// 1 - I
-	// 2- II
-	// 3 - III
-	// 4 - IV
-	// 5 - V
-	// 6 - VI
-	// 7 - VII
-	// 8 - VIII
-	// 9 - IX
-	// 10 - X
-	// 11 - 10 + 1 = XI
-	// ...
-	// 20 - 10 + 10 = XX
-	// 30 - XXX
-	// 40 - XL
-	// 50 - L
-	// 100 - C
-	// 500 - D
-	// 900 - CM
-	// 1000 - M
-	// 2000 - MM
-	// 4000 - MMMM
-
-	/*
-	 * 4656 4000/1000 = 4 656 / 500 = 1 156 / 100 = 1 56 / 50 = 1 6 / 10 = 0 6 /
-	 * 5 = 1 1 / 1 = 1
-	 * 
-	 * 4 - IV 4 / 5 = 0
-	 * 
-	 * 9 - IX
-	 * 
-	 * 1950 1950 / 1000 = 1 950 / 900 = 1
-	 */
-
 	/**
 	 * Change decimal number to Roman number.
 	 * 
@@ -184,22 +145,6 @@ public class RomanFormatter {
 		return result;
 	}
 
-	// M
-	// public int fromRomanNumber(String romanNumber) {
-	// Map<String, Integer> mapRomansInt = new HashMap<String, Integer>();
-	// mapRomansInt.put("M", 1000); // order by values - descending
-	// int sum = 0;
-	// for (Entry<String, Integer> entry : mapRomansInt.entrySet()) {
-	// // String sub = romanNumber.findSubstring(entry.getKey()); // get
-	// // substring of Ms
-	// // int size = sub.length();
-	// // sum = size * entry.getValue();
-	// }
-	// }
-
-	// MMMDCLVI - 1000/500/100/50/5/1
-	// substring(0,index) - when M appears
-
 	/**
 	 * @param args
 	 *            arguments for the program
@@ -223,7 +168,7 @@ public class RomanFormatter {
 			System.out.println("Excpetion catched!");
 		}
 
-		for (int i = 1; i < 5000; ++i) {
+		for (int i = 1; i < Integer.MAX_VALUE; ++i) {
 			String romanNumberString = romanFormatter.toRomanNumber(i);
 			int romanNumber = 0;
 			try {
