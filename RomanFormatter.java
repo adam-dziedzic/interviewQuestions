@@ -9,12 +9,12 @@ import java.util.List;
 public class RomanFormatter {
 
 	/** Pairs of decimal numbers and Roman numerals. */
-	private List<RomanDecimal> romansDecimals;
+	private static List<RomanDecimal> romansDecimals;
 
 	/**
 	 * Set Roman numerals and their decimal number equivalents.
 	 */
-	public RomanFormatter() {
+	static {
 		romansDecimals = new ArrayList<RomanDecimal>();
 		romansDecimals
 				.add(new RomanDecimal("M", 1000, Integer.MAX_VALUE / 1000));
@@ -38,7 +38,7 @@ public class RomanFormatter {
 	 * @author Adam Dziedzic
 	 * 
 	 */
-	private class RomanDecimal {
+	private static class RomanDecimal {
 
 		/** Roman numeral equivalent of the decimal number */
 		private String romanNumeral;
@@ -46,8 +46,8 @@ public class RomanFormatter {
 		/** Decimal number equivalent of the Roman numeral. */
 		private int decimalNumber;
 
-		/* Number of occurrences of the literal. */
-		private int numberOfOccurrences;
+		/* Number of max occurrences of a Roman literal. */
+		private int maxOccurrences;
 
 		/**
 		 * Create a pair consisting of Roman numeral and its decimal number
@@ -62,7 +62,7 @@ public class RomanFormatter {
 				int numberOfOccurrences) {
 			this.romanNumeral = romanNumeral;
 			this.decimalNumber = decimalNumber;
-			this.numberOfOccurrences = numberOfOccurrences;
+			this.maxOccurrences = numberOfOccurrences;
 		}
 
 		/**
@@ -83,10 +83,10 @@ public class RomanFormatter {
 
 		/**
 		 * 
-		 * @return number of maximal occurrences of the Roman numeral
+		 * @return number of max occurrences of the Roman numeral
 		 */
-		public int getNumberOfOccurrences() {
-			return numberOfOccurrences;
+		public int getMaxOccurrences() {
+			return maxOccurrences;
 		}
 
 	}
@@ -98,20 +98,19 @@ public class RomanFormatter {
 	 *            decimal number
 	 * @return Roman number
 	 */
-	public String toRomanNumber(int decimalNumber) {
-		StringBuffer result = new StringBuffer();
+	public static String toRomanNumber(int decimalNumber) {
+		StringBuffer romanNumber = new StringBuffer(); // result
 		for (RomanDecimal romanDecimal : romansDecimals) {
 			int numberOfLetters = decimalNumber
 					/ romanDecimal.getDecimalNumber();
 			decimalNumber = decimalNumber
 					- (numberOfLetters * romanDecimal.getDecimalNumber());
-			StringBuffer romanLetters = new StringBuffer();
 			for (int i = 0; i < numberOfLetters; ++i) {
-				romanLetters.append(romanDecimal.getRomanNumeral());
+				romanNumber.append(romanDecimal.getRomanNumeral());
 			}
-			result.append(romanLetters.toString());
+			;
 		}
-		return result.toString();
+		return romanNumber.toString();
 	}
 
 	/**
@@ -121,28 +120,26 @@ public class RomanFormatter {
 	 *            Roman number
 	 * @return decimal number
 	 */
-	public int fromRomanNumber(String romanNumber) {
-		int result = 0;
+	public static int fromRomanNumber(String romanNumber) {
+		int decimalNumber = 0; // final result to be returned
+		int substringFirstIndex = 0; // Roman number substring first index
 		for (RomanDecimal romanDecimal : romansDecimals) {
 			int romanDecimalLength = romanDecimal.getRomanNumeral().length();
-			int occurrencesCounter = 0;
-			while (occurrencesCounter < romanDecimal.getNumberOfOccurrences()
-					&& romanDecimalLength <= romanNumber.length()
+			int occurrencesCounter = 0; // Roman numeral occurrence counter
+			while (occurrencesCounter < romanDecimal.getMaxOccurrences()
+					&& romanDecimalLength <= (romanNumber.length() - substringFirstIndex)
 					&& romanDecimal.getRomanNumeral().equals(
-							romanNumber.substring(0, romanDecimalLength))) {
+							romanNumber.substring(substringFirstIndex,
+									substringFirstIndex + romanDecimalLength))) {
 				++occurrencesCounter;
-				result += romanDecimal.getDecimalNumber();
-				romanNumber = romanNumber.substring(romanDecimal
-						.getRomanNumeral().length());
-				if (romanDecimalLength > 1) {
-					break;
-				}
+				substringFirstIndex += romanDecimalLength;
+				decimalNumber += romanDecimal.getDecimalNumber();
 			}
 		}
-		if (romanNumber.length() > 0) {
+		if (romanNumber.length() - substringFirstIndex > 0) {
 			throw new IllegalArgumentException("Illegal Roman number!");
 		}
-		return result;
+		return decimalNumber;
 	}
 
 	/**
@@ -150,29 +147,32 @@ public class RomanFormatter {
 	 *            arguments for the program
 	 */
 	public static void main(String[] args) {
-		RomanFormatter romanFormatter = new RomanFormatter();
 
-		System.out.println(romanFormatter.toRomanNumber(4));
-		System.out.println(romanFormatter.toRomanNumber(45));
-		System.out.println(romanFormatter.toRomanNumber(98));
-		System.out.println(romanFormatter.toRomanNumber(182));
-		System.out.println(romanFormatter.toRomanNumber(3456));
+		System.out.println(RomanFormatter.toRomanNumber(4));
+		System.out.println(RomanFormatter.toRomanNumber(45));
+		System.out.println(RomanFormatter.toRomanNumber(98));
+		System.out.println(RomanFormatter.toRomanNumber(182));
+		System.out.println(RomanFormatter.toRomanNumber(3456));
+		String maxValue = RomanFormatter.toRomanNumber(Integer.MAX_VALUE);
 
-		System.out.println(romanFormatter.fromRomanNumber("XLV"));
-		System.out.println(romanFormatter.fromRomanNumber("I"));
-		System.out.println(romanFormatter.fromRomanNumber("II"));
+		System.out.println(RomanFormatter.fromRomanNumber("MMDCXLV"));
+		System.out.println(RomanFormatter.fromRomanNumber("I"));
+		System.out.println(RomanFormatter.fromRomanNumber("II"));
+		if (Integer.MAX_VALUE != RomanFormatter.fromRomanNumber(maxValue)) {
+			System.out.println("Error - cannot handle max value!");
+		}
 
 		try {
-			System.out.println(romanFormatter.fromRomanNumber("IIII"));
+			System.out.println(RomanFormatter.fromRomanNumber("IIII"));
 		} catch (IllegalArgumentException e) {
 			System.out.println("Excpetion catched!");
 		}
 
-		for (int i = 1; i < Integer.MAX_VALUE; ++i) {
-			String romanNumberString = romanFormatter.toRomanNumber(i);
+		for (int i = 1; i < 10000; ++i) {
+			String romanNumberString = RomanFormatter.toRomanNumber(i);
 			int romanNumber = 0;
 			try {
-				romanNumber = romanFormatter.fromRomanNumber(romanNumberString);
+				romanNumber = RomanFormatter.fromRomanNumber(romanNumberString);
 			} catch (IllegalArgumentException e) {
 				System.out.println("Error for i: " + i + " Roman: "
 						+ romanNumberString + " Decimal: " + romanNumber);
